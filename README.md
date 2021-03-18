@@ -1,4 +1,4 @@
-# BF_interpreter
+# BF interpreter
 
 
 
