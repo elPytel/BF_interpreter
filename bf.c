@@ -1,10 +1,10 @@
-# By Pytel
-"""
+// By Pytel
+/*
 Based on code by:
 @maxcountryman
 @himehowareu
 @D0tty
-"""
+*/
 
 #include <stdio.h>
 #include <string.h>
