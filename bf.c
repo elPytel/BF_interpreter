@@ -10,38 +10,50 @@ unsigned char* ptr = tape;
 
 
 void interpret(char* input) {
-  char current_char;
-  size_t i;
-  size_t loop;
+	char current_char;
+	size_t i;
+	size_t loop;
 
-  for (i = 0; input[i] != 0; i++) {
-    current_char = input[i];
-    if (current_char == '>') {
-      ++ptr;
-    } else if (current_char == '<') {
-      --ptr;
-    } else if (current_char == '+') {
-      ++*ptr;
-    } else if (current_char == '-') {
-      --*ptr;
-    } else if (current_char == '.' ) {
-      putchar(*ptr);
-    } else if (current_char == ',') {
-      *ptr = getchar();
-    } else if (current_char == '[') {
-      continue;
-    } else if (current_char == ']' && *ptr) {
-      loop = 1;
-      while (loop > 0) {
-        current_char = input[--i];
-        if (current_char == '[') {
-          loop--;
-        } else if (current_char == ']') {
-          loop++;
-        }
-      }
-    }
-  }
+	for (i = 0; input[i] != 0; i++) {
+		current_char = input[i];
+		if (current_char == '>') {
+			++ptr;
+		} else if (current_char == '<') {
+			--ptr;
+		} else if (current_char == '+') {
+			++*ptr;
+		} else if (current_char == '-') {
+			--*ptr;
+		} else if (current_char == '.' ) {
+			putchar(*ptr);
+		} else if (current_char == ',') {
+			*ptr = getchar();
+		} else if (current_char == '[' && *ptr == 0) { 	// jump behind loop
+			loop = 1; 
+			while (loop > 0) { 
+				current_char = input[++i]; 
+				if (current_char == '[') {
+					loop++;
+				} else if (current_char == ']') {
+					loop--;
+				}
+			}
+		} else if (current_char == '[') {			// do loop
+			continue;
+		} else if (current_char == ']' && *ptr) {	// repeat loop
+			loop = 1;
+			while (loop > 0) {
+				current_char = input[--i];
+				if (current_char == '[') {
+					loop--;
+				} else if (current_char == ']') {
+					loop++;
+				}
+			}
+		} else {			// random chars and comments
+			continue
+		}
+	}
 }
 
 
