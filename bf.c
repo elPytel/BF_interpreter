@@ -8,7 +8,6 @@ unsigned char tape[30000] = {0};
 // set the pointer to point at the left-most cell of the tape
 unsigned char* ptr = tape;
 
-
 void interpret(char* input) {
     char current_char;
     size_t i;
