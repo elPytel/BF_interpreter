@@ -1,3 +1,5 @@
+![Tests](https://github.com/elPytel/BF_interpreter/actions/workflows/c-cpp.yml/badge.svg)
+
 # BF interpreter
 This is BF interpreter. It's written in C. It's not very fast, but it's very simple. It's also very small. It's only 200 lines of code. 
 

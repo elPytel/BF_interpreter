@@ -17,10 +17,9 @@ Based on code by:
 void help(char *path_to_interpreter)
 {
 	printf("Usage: %s file.bf\n", path_to_interpreter);
-	exit(2);
 }
 
-/* 
+/*
  * Returns the size of the file in bytes
  */
 long int file_size(FILE *file)
@@ -48,9 +47,10 @@ int read_file(char *path, char **buffer)
 	char *file_buf = malloc(file_len * sizeof(char) + 1);
 	file_buf[file_len] = '\0';
 
-	fread(*buffer, file_len, sizeof(char), file);
+	fread(file_buf, file_len, sizeof(char), file);
 	fclose(file);
 
+	*buffer = file_buf;
 	return file_len;
 }
 
@@ -64,30 +64,37 @@ char *add_cell(char *tape, size_t *tape_size)
 		exit(1);
 	}
 
-	if (!tape[*tape_size - 1])
-	{
-		tape[*tape_size - 1] = 0;
-	}
-
+	tmp[*tape_size - 1] = 0;
 	return tmp;
 }
 
 char *remove_cell(char *tape, size_t *tape_size, char *ptr)
 {
-	char tail = tape[*tape_size - 1];
-
-	// if the cell is zeroed and not pointed to currently
-	if (tail == 0 && ptr != &tape[*tape_size - 1] && *tape_size > 0)
+	char* tail = &tape[*tape_size - 1];
+	// tape is empty
+	if (*tape_size < 1)
 	{
-		char *tmp = (char *)realloc(tape, (--*tape_size) * sizeof(char));
-		if (tmp == NULL)
-		{
-			printf("FATAL: Could not reallocate tape memory!");
-			exit(1);
-		}
-		return tmp;
+		return tape;
 	}
-	return tape;
+	// if the last cell is not zeroed
+	else if (*tail != 0)
+	{
+		return tape;
+	}
+	// if the cell is pointed to currently
+	else if (ptr == tail)
+	{
+		return tape;
+	}
+
+	// remove last cell
+	char *tmp = (char *)realloc(tape, (--*tape_size) * sizeof(char));
+	if (tmp == NULL)
+	{
+		printf("FATAL: Could not reallocate tape memory!");
+		exit(1);
+	}
+	return tmp;
 }
 
 void interpret(char *input)
@@ -119,6 +126,12 @@ void interpret(char *input)
 		else if (current_char == '<')
 		{
 			--index;
+			if (index < 0)
+			{
+				printf("FATAL: Tape index out of bounds!");
+				free(tape);
+				exit(1);
+			}
 			--ptr;
 		}
 		else if (current_char == '+')
@@ -189,15 +202,23 @@ int main(int argc, char *argv[])
 	if (argc != 2)
 	{
 		help(argv[0]);
+		exit(2);
 	}
 
 	// load file
 	char *file_buf = NULL;
 	long file_len = read_file(argv[1], &file_buf);
-	if (file_len <= 0 )
+	// check if file is empty or not found
+	if (file_len <= 0)
 	{
-		printf("Error: fopen failed\n");
+		printf("Error: fopen failed!\n");
 		exit(1);
+	}
+	// check if buffer is empty
+	if (file_buf == NULL)
+	{
+		printf("Error: file reading failed!\n");
+		exit(3);
 	}
 
 	// interpret
