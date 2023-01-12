@@ -10,6 +10,50 @@ Based on code by:
 #include <string.h>
 #include <stdlib.h>
 
+#define OK 0
+#define NOK -1
+
+// help
+void help(char *path_to_interpreter)
+{
+	printf("Usage: %s file.bf\n", path_to_interpreter);
+	exit(2);
+}
+
+/* 
+ * Returns the size of the file in bytes
+ */
+long int file_size(FILE *file)
+{
+	fseek(file, 0L, SEEK_END);
+	long int file_len = ftell(file);
+	rewind(file);
+	return file_len;
+}
+
+/*
+ * Reads the file and returns the size of the file in bytes
+ * Returns -1 on error
+ */
+int read_file(char *path, char **buffer)
+{
+	FILE *file = fopen(path, "r");
+	if (file == NULL)
+	{
+		return NOK;
+	}
+
+	long file_len = file_size(file);
+
+	char *file_buf = malloc(file_len * sizeof(char) + 1);
+	file_buf[file_len] = '\0';
+
+	fread(*buffer, file_len, sizeof(char), file);
+	fclose(file);
+
+	return file_len;
+}
+
 char *add_cell(char *tape, size_t *tape_size)
 {
 	char *tmp = (char *)realloc(tape, (++*tape_size) * sizeof(char));
@@ -139,40 +183,27 @@ void interpret(char *input)
 	free(tape);
 }
 
-// help
-void help(char *name)
-{
-	printf("Usage: %s file.bf\n", name);
-	exit(2);
-}
-
 int main(int argc, char *argv[])
 {
-
+	// check args
 	if (argc != 2)
 	{
 		help(argv[0]);
 	}
 
-	FILE *file = fopen(argv[1], "r");
-	if (file == NULL)
+	// load file
+	char *file_buf = NULL;
+	long file_len = read_file(argv[1], &file_buf);
+	if (file_len <= 0 )
 	{
 		printf("Error: fopen failed\n");
 		exit(1);
 	}
 
-	fseek(file, 0L, SEEK_END);
-	long file_len = ftell(file);
-	rewind(file);
-
-	char *file_buf = malloc(file_len * sizeof(char) + 1);
-	file_buf[file_len] = '\0';
-
-	fread(file_buf, file_len, sizeof(char), file);
-	fclose(file);
-
+	// interpret
 	interpret(file_buf); // outputs input
 
+	// free memory
 	free(file_buf);
 	return 0;
 }
