@@ -1,0 +1,9 @@
+{
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/pytel/C/BF_interpreter",
+            "binaryPath": "/home/pytel/C/BF_interpreter/bf",
+            "binaryArgs": []
+        }
+    ]
+}
