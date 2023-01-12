@@ -16,6 +16,7 @@ jobs:
     - name: Install dependencies
       run: |
         echo -e "This will install dependencies"
+        apt install $(cat ./dependencies.txt)
         echo -e "Done \n"
     - name: test
       run: |
