@@ -1,4 +1,4 @@
-TARGET = program
+TARGET = bf
 CC = clang
 LIBS = -lm
 CFLAGS = -g -Wall
